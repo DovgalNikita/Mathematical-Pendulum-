@@ -1,0 +1,83 @@
+//---------------------------------------------------------------------------
+
+#ifndef Unit1H
+#define Unit1H
+#include <System.Classes.hpp>
+#include <Vcl.ComCtrls.hpp>
+#include <Vcl.Controls.hpp>
+#include <Vcl.ExtCtrls.hpp>
+#include <Vcl.StdCtrls.hpp>
+#include <Vcl.Imaging.pngimage.hpp>
+#include <System.ImageList.hpp>
+#include <Vcl.ImgList.hpp>
+//---------------------------------------------------------------------------
+#include <cmath>
+#include <System.Classes.hpp>
+#include <Vcl.Controls.hpp>
+#include <Vcl.StdCtrls.hpp>
+#include <Vcl.Forms.hpp>
+#include <Vcl.ExtCtrls.hpp>
+#include <Vcl.ComCtrls.hpp>
+//---------------------------------------------------------------------------
+	extern double PI_2=asin(1.0);
+	extern short int A_x=200;
+	extern short int A_y=200;
+//---------------------------------------------------------------------------	
+class TForm1 : public TForm
+{
+__published:	// IDE-managed Components
+	TBevel *Bevel1;
+	TGroupBox *GroupBox1;
+	TLabel *Label1;
+	TLabel *Label2;
+	TEdit *EditL;
+	TTrackBar *TrackBar1;
+	TButton *Button1;
+	TShape *Shape1;
+	TButton *Button2;
+	TButton *Button3;
+	TLabel *Label3;
+	TTrackBar *TrackBar2;
+	TEdit *EditP;
+	TGroupBox *GroupBox2;
+	TCheckBox *CheckBox1;
+	TImage *ImageT;
+	TLabel *Label4;
+	TImage *ImageP;
+	TButton *Button4;
+	TLabel *Label5;
+	TLabel *Label6;
+	TEdit *EditR;
+	void __fastcall Button1Click(TObject *Sender);
+	void __fastcall Button2Click(TObject *Sender);
+	void __fastcall Button3Click(TObject *Sender);
+	void __fastcall TrackBar2Change(TObject *Sender);
+	void __fastcall FormActivate(TObject *Sender);
+	void __fastcall CheckBox1Click(TObject *Sender);
+	void __fastcall Button4Click(TObject *Sender);
+	void __fastcall TrackBar1Change(TObject *Sender);
+private:	// User declarations
+public:		// User declarations
+	__fastcall TForm1(TComponent* Owner);
+};
+//---------------------------------------------------------------------------
+extern PACKAGE TForm1 *Form1;
+//---------------------------------------------------------------------------
+
+class may
+{
+public:
+	int m=1;
+	double g=9.8;
+	double L;
+	int resist;
+	int pos;
+	may(double L,int resist,int pos)
+		{
+			this->L=L;
+			this->resist=resist;
+			this->pos=pos;
+		}
+};
+
+#endif

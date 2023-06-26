@@ -1,0 +1,10 @@
+﻿[GroupBox1]
+Coordinates=10,10,70,51
+Visible=True
+
+[Bevel1]
+Coordinates=90,10,47,33
+
+[]
+Coordinates=89,53,82,33
+

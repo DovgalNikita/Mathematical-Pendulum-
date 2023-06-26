@@ -1,0 +1,150 @@
+//---------------------------------------------------------------------------
+#include <vcl.h>
+#pragma hdrstop
+#include <windows.h>
+#include "Unit1.h"
+#include <cmath>
+#include <string>
+//---------------------------------------------------------------------------
+#pragma package(smart_init)
+#pragma resource "*.dfm"
+TForm1 *Form1;
+void funcIC ()
+{
+	Form1->ImageCanvas->Canvas->Pen->Width=3;
+	Form1->ImageCanvas->Canvas->MoveTo(250,180);
+	Form1->ImageCanvas->Canvas->LineTo(250,380);
+	Form1->ImageCanvas->SendToBack();
+}
+//---------------------------------------------------------------------------
+__fastcall TForm1::TForm1(TComponent* Owner)
+	: TForm(Owner)
+{
+}
+//---------------------------------------------------------------------------
+void __fastcall TForm1::FormActivate(TObject *Sender)
+{
+	Shape1->Top=200+cos(0*PI_2/90)*A_y;
+	funcIC();
+}
+//---------------------------------------------------------------------------
+void __fastcall TForm1::CheckBox1Click(TObject *Sender)
+{
+	if (CheckBox1->State==cbChecked) ImageT->Visible=true; else ImageT->Visible=false; 	
+}
+//---------------------------------------------------------------------------
+void __fastcall TForm1::TrackBar1Change(TObject *Sender)//трэкбар сопротивление
+{
+	EditR->Text=IntToStr(TrackBar1->Position/10)+" H";
+	if(TrackBar1->Position>0) ImageW->Visible=true; else ImageW->Visible=false;
+}
+//---------------------------------------------------------------------------
+void __fastcall TForm1::TrackBar2Change(TObject *Sender)//трэкбар Угол
+{
+	Form1->ImageCanvas->Visible=false;
+	Form1->ImageCanvas2->Visible=true;
+	Form1->ImageCanvas2->SendToBack();
+	Shape1->Left=647+sin(TrackBar2->Position*PI_2/90)*A_x;
+	Shape1->Top=200+cos(TrackBar2->Position*PI_2/90)*A_y;
+	EditP->Text=IntToStr(TrackBar2->Position)+"°";
+	Form1->ImageCanvas2->Picture->Bitmap=NULL;
+	Form1->ImageCanvas2->Canvas->Pen->Width=3;
+	Form1->ImageCanvas2->Canvas->MoveTo(250,180);
+	Form1->ImageCanvas2->Canvas->LineTo(250+sin(TrackBar2->Position*PI_2/90)*A_x,180+cos(TrackBar2->Position*PI_2/90)*A_y);
+}
+//---------------------------------------------------------------------------
+void __fastcall TForm1::Button4Click(TObject *Sender)//кнопка стоп
+{
+	Button1->Tag=4;	
+}
+//---------------------------------------------------------------------------
+void __fastcall TForm1::Button3Click(TObject *Sender)//кнопка сбросить
+{
+	Button1->Tag=3;
+	Shape1->Left=647;
+	Shape1->Top=200+cos(0*PI_2/90)*A_y;
+	TrackBar1->Position=0;
+	TrackBar2->Position=0;
+	funcIC();
+	EditL->Text="";
+	
+}//---------------------------------------------------------------------------
+void __fastcall TForm1::Button1Click(TObject *Sender)//кнопка сохранить
+{
+	if (EditL->Text=="") 
+	{
+		MessageBox(0,L"Введите данные во все поля",L"Ошибка", MB_ICONWARNING);
+		Button1->Tag=0;
+	}
+		else                                                                                            
+			{
+				Button1->Tag=1;
+			}
+}
+//---------------------------------------------------------------------------
+void __fastcall TForm1::Button2Click(TObject *Sender)//кнопка пуск
+{
+	if (Button1->Tag==0) MessageBox(0,L"Сохраните характеристики",L"Предупреждение", MB_ICONWARNING);
+	else
+	{
+			Shape1->Tag=1;
+			
+			double L=StrToFloat(EditL->Text);
+			int resist=TrackBar1->Position;
+			int pos=TrackBar2->Position;
+			may obj(L,resist,pos);
+			
+			double w=pow(obj.g/obj.L,0.5);
+			double T=2*M_PI/w;
+			double alpha=TrackBar2->Position;
+			double alpha0=TrackBar2->Position;
+			
+			Label4->Caption="T(Период)="+FloatToStr(T)+" c";
+			Label5->Caption="w(Циклическая частота)="+FloatToStr(w)+"рад/c";
+			
+			while (Button1->Tag==1)
+			{
+				for (double t=0;t<T;t+=0.01)
+				{
+					if(Button1->Tag==3 || Shape1->Left>646) break; 
+					else
+						{
+							Form1->DoubleBuffered = true;
+							if (Button1->Tag==4) break;
+							alpha=alpha*cos(w*t)-(TrackBar1->Position)/10;
+							Form1->ImageCanvas2->Picture->Bitmap=NULL;
+							Form1->ImageCanvas2->Canvas->Pen->Width=3;
+							Form1->ImageCanvas2->Canvas->MoveTo(250,180);
+							Shape1->Left=647-sin(alpha*PI_2/90)*A_x;
+							Shape1->Top=200+cos(alpha*PI_2/90)*A_y;
+							Label6->Caption="Угол: "+FloatToStr(round(alpha))+" °";
+							Sleep(10);
+							Application->ProcessMessages();
+						}
+				}
+				if (Shape1->Left>=647)
+				{
+					for (double t=0;t<T;t+=0.01)
+					{
+						if(Button1->Tag==3) break; 
+						else
+							{
+								if (Button1->Tag==4) break;
+								Form1->DoubleBuffered = true;
+								alpha=alpha0*cos(w*t)+(TrackBar1->Position)/10;
+								Form1->ImageCanvas2->Picture->Bitmap=NULL;
+								Form1->ImageCanvas2->Canvas->Pen->Width=3;
+								Form1->ImageCanvas2->Canvas->MoveTo(250,180);
+								Form1->ImageCanvas2->Canvas->LineTo(250+sin(alpha*PI_2/90)*A_x,180+cos(alpha*PI_2/90)*A_y);
+								Form1->ImageCanvas2->SendToBack();
+								Shape1->Left=646+sin(alpha*PI_2/90)*A_x;
+								Shape1->Top=200+cos(alpha*PI_2/90)*A_y;
+								Label6->Caption="Угол: "+FloatToStr(round(alpha))+" °";
+								Sleep(10);
+								Application->ProcessMessages();
+							}
+					}
+				}
+			}
+	} 
+}
